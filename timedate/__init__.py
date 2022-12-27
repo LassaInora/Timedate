@@ -529,7 +529,7 @@ class _TimeDate:
             (Time): Temps restant
         """
         return Time(
-            self.year - other.year, self.month - other.month, self.day - other.day + 1,
+            self.year - other.year, self.month - other.month, self.day - other.day,
             self.hour - other.hour, self.minute - other.minute, self.second - other.second,
             self.milli - other.milli, self.micro - other.micro, self.nano - other.nano,
             self.pico - other.pico, self.femto - other.femto, self.atto - other.atto,
@@ -747,7 +747,7 @@ class Date(_TimeDate):
     @property
     def recommended_format(self):
         if _LANGUAGE == 'en':
-            f"_ND_, _NM_ _D_, _Y_ at _en-time_"
+            return f"_ND_, _NM_ _D_, _Y_ at _en-time_"
         elif _LANGUAGE == 'ma':
             return f"_Y_ 年 _M_ 月 _D_ _ND_ _ma-time_"
         elif _LANGUAGE == 'hi':
@@ -762,6 +762,8 @@ class Date(_TimeDate):
             return f"_ND_, _D_ _NM_ _Y_ г., _ru-time_"
         elif _LANGUAGE == 'po':
             return f"_ND_, _D_ de _NM_ de _Y_ às _po-time_"
+        else:
+            return f"_ND_, _NM_ _D_, _Y_ at _en-time_"
 
     @property
     def name_month(self):
@@ -903,7 +905,7 @@ class Date(_TimeDate):
         Returns:
             (Time): The time.
         """
-        return Date.NOW() - self if Date.NOW() >= self else None
+        return self - Date.NOW() if self >= Date.NOW() else None
 
     @property
     def chrono(self):
@@ -912,4 +914,4 @@ class Date(_TimeDate):
         Returns:
             (Time): The time.
         """
-        return self - Date.NOW() if self >= Date.NOW() else None
+        return Date.NOW() - self if Date.NOW() >= self else None
