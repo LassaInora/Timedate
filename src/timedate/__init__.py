@@ -1,192 +1,23 @@
-"""Advanced date and time management library."""
-
-import os
 import datetime
-from time import time_ns
-import typing
+import time
+import warnings
 
-DELTA = {  # All time zones and their offset with UTC in seconds
-    'Dateline Standard Time': -720,
-    'UTC-11': -660,
-    'Aleutian Standard Time': -600,
-    'Hawaiian Standard Time': -600,
-    'Marquesas Standard Time': -570,
-    'Alaskan Standard Time': -540,
-    'UTC-09': -540,
-    'Pacific Standard Time (Mexico)': -480,
-    'UTC-08': -480,
-    'Pacific Standard Time': -480,
-    'US Mountain Standard Time': -420,
-    'Mountain Standard Time (Mexico)': -420,
-    'Mountain Standard Time': -420,
-    'Yukon Standard Time': -420,
-    'Central America Standard Time': -360,
-    'Central Standard Time': -360,
-    'Easter Island Standard Time': -300,
-    'Central Standard Time (Mexico)': -360,
-    'Canada Central Standard Time': -360,
-    'SA Pacific Standard Time': -300,
-    'Eastern Standard Time (Mexico)': -300,
-    'Eastern Standard Time': -300,
-    'Haiti Standard Time': -300,
-    'Cuba Standard Time': -300,
-    'US Eastern Standard Time': -300,
-    'Turks And Caicos Standard Time': -300,
-    'Paraguay Standard Time': -180,
-    'Atlantic Standard Time': -240,
-    'Venezuela Standard Time': -240,
-    'Central Brazilian Standard Time': -240,
-    'SA Western Standard Time': -240,
-    'Pacific SA Standard Time': -180,
-    'Newfoundland Standard Time': -210,
-    'Tocantins Standard Time': -180,
-    'E. South America Standard Time': -180,
-    'SA Eastern Standard Time': -180,
-    'Argentina Standard Time': -180,
-    'Greenland Standard Time': -180,
-    'Montevideo Standard Time': -180,
-    'Magallanes Standard Time': -180,
-    'Saint Pierre Standard Time': -180,
-    'Bahia Standard Time': -180,
-    'UTC-02': 600,
-    'Mid-Atlantic Standard Time': 600,
-    'Azores Standard Time': -60,
-    'Cape Verde Standard Time': -60,
-    'UTC': 0,
-    'GMT Standard Time': 0,
-    'Greenwich Standard Time': 0,
-    'Sao Tome Standard Time': 0,
-    'Morocco Standard Time': 60,
-    'W. Europe Standard Time': 60,
-    'Central Europe Standard Time': 60,
-    'Romance Standard Time': 60,
-    'Central European Standard Time': 60,
-    'W. Central Africa Standard Time': 60,
-    'Jordan Standard Time': 120,
-    'GTB Standard Time': 120,
-    'Middle East Standard Time': 120,
-    'Egypt Standard Time': 120,
-    'E. Europe Standard Time': 120,
-    'Syria Standard Time': 120,
-    'West Bank Standard Time': 120,
-    'South Africa Standard Time': 120,
-    'FLE Standard Time': 120,
-    'Israel Standard Time': 120,
-    'South Sudan Standard Time': 120,
-    'Kaliningrad Standard Time': 120,
-    'Sudan Standard Time': 120,
-    'Libya Standard Time': 120,
-    'Namibia Standard Time': 120,
-    'Arabic Standard Time': 180,
-    'Turkey Standard Time': 180,
-    'Arab Standard Time': 180,
-    'Belarus Standard Time': 180,
-    'Russian Standard Time': 180,
-    'E. Africa Standard Time': 180,
-    'Volgograd Standard Time': 180,
-    'Iran Standard Time': 210,
-    'Arabian Standard Time': 240,
-    'Astrakhan Standard Time': 240,
-    'Azerbaijan Standard Time': 240,
-    'Russia Time Zone 3': 240,
-    'Mauritius Standard Time': 240,
-    'Saratov Standard Time': 240,
-    'Georgian Standard Time': 240,
-    'Caucasus Standard Time': 240,
-    'Afghanistan Standard Time': 270,
-    'West Asia Standard Time': 300,
-    'Ekaterinburg Standard Time': 300,
-    'Pakistan Standard Time': 300,
-    'Qyzylorda Standard Time': 300,
-    'India Standard Time': 330,
-    'Sri Lanka Standard Time': 330,
-    'Nepal Standard Time': 345,
-    'Central Asia Standard Time': 360,
-    'Bangladesh Standard Time': 360,
-    'Omsk Standard Time': 360,
-    'Myanmar Standard Time': 390,
-    'SE Asia Standard Time': 420,
-    'Altai Standard Time': 420,
-    'W. Mongolia Standard Time': 420,
-    'North Asia Standard Time': 420,
-    'N. Central Asia Standard Time': 420,
-    'Tomsk Standard Time': 420,
-    'China Standard Time': 480,
-    'North Asia East Standard Time': 480,
-    'Singapore Standard Time': 480,
-    'W. Australia Standard Time': 480,
-    'Taipei Standard Time': 480,
-    'Ulaanbaatar Standard Time': 480,
-    'Aus Central W. Standard Time': 525,
-    'Transbaikal Standard Time': 540,
-    'Tokyo Standard Time': 540,
-    'North Korea Standard Time': 540,
-    'Korea Standard Time': 540,
-    'Yakutsk Standard Time': 540,
-    'Cen. Australia Standard Time': -810,
-    'AUS Central Standard Time': -150,
-    'E. Australia Standard Time': -120,
-    'AUS Eastern Standard Time': -780,
-    'West Pacific Standard Time': -120,
-    'Tasmania Standard Time': -780,
-    'Vladivostok Standard Time': -120,
-    'Lord Howe Standard Time': -780,
-    'Bougainville Standard Time': -780,
-    'Russia Time Zone 10': -780,
-    'Magadan Standard Time': -780,
-    'Norfolk Standard Time': -720,
-    'Sakhalin Standard Time': -780,
-    'Central Pacific Standard Time': -780,
-    'Russia Time Zone 11': -720,
-    'New Zealand Standard Time': -660,
-    'UTC+12': -720,
-    'Fiji Standard Time': -720,
-    'Kamchatka Standard Time': -720,
-    'Chatham Islands Standard Time': -615,
-    'UTC+13': -660,
-    'Tonga Standard Time': -660,
-    'Samoa Standard Time': -600,
-    'Line Islands Standard Time': -600
-}
-
-_LANGUAGE = "en"
+import LassaLib
 
 _DICTIONARY = {
     'en': {
-        'and': 'and',
-        'to': 'to',
-        'year': 'year',
-        'month': 'month',
-        'day': 'day',
-        'hour': 'hour',
-        'minute': 'minute',
-        'second': 'second',
-        'millisecond': 'millisecond',
-        'microsecond': 'microsecond',
-        'nanosecond': 'nanosecond',
-        'years': 'years',
-        'months': 'months',
-        'days': 'days',
-        'hours': 'hours',
-        'minutes': 'minutes',
-        'seconds': 'seconds',
-        'milliseconds': 'milliseconds',
-        'microseconds': 'microseconds',
-        'nanoseconds': 'nanoseconds',
-        'time remaining until': 'Time remaining until ',
-        'time elapsed since': 'Time elapsed since ',
-        'january': 'january',
-        'february': 'february',
-        'march': 'march',
-        'april': 'april',
-        'may': 'may',
-        'june': 'june',
-        'july': 'july',
-        'august': 'august',
-        'september': 'september',
-        'october': 'october',
-        'november': 'november',
-        'december': 'december',
+        'january': 'January',
+        'february': 'February',
+        'march': 'March',
+        'april': 'April',
+        'may': 'May',
+        'june': 'June',
+        'july': 'July',
+        'august': 'August',
+        'september': 'September',
+        'october': 'October',
+        'november': 'November',
+        'december': 'December',
         'sunday': 'Sunday',
         'monday': 'Monday',
         'tuesday': 'Tuesday',
@@ -196,28 +27,6 @@ _DICTIONARY = {
         'saturday': 'Saturday',
     },
     'ma': {
-        'and': '和',
-        'to': '到',
-        'year': '年',
-        'month': '月',
-        'day': '天',
-        'hour': '小时',
-        'minute': '分钟',
-        'second': '秒',
-        'millisecond': '毫秒',
-        'microsecond': '微秒',
-        'nanosecond': '纳秒',
-        'years': '年',
-        'months': '月',
-        'days': '天',
-        'hours': '小时',
-        'minutes': '分钟',
-        'seconds': '秒',
-        'milliseconds': '毫秒',
-        'microseconds': '微秒',
-        'nanoseconds': '纳秒',
-        'time remaining until': '剩余时间至 ',
-        'time elapsed since': '自以来经过的时间 ',
         'january': '一月',
         'february': '二月',
         'march': '三月',
@@ -239,28 +48,6 @@ _DICTIONARY = {
         'saturday': '星期六',
     },
     'hi': {
-        'and': 'और',
-        'to': 'को',
-        'year': 'साल',
-        'month': 'महीना',
-        'day': 'दिन',
-        'hour': 'घंटा',
-        'minute': 'मिनट',
-        'second': 'दूसरा',
-        'millisecond': 'मिलीसेकंड',
-        'microsecond': 'माइक्रोसेकंड',
-        'nanosecond': 'नैनोसेकंड',
-        'years': 'वर्षों',
-        'months': 'महीने',
-        'days': 'दिन',
-        'hours': 'घंटे',
-        'minutes': 'मिनट',
-        'seconds': 'सेकंड',
-        'milliseconds': 'मिलीसेकेंड',
-        'microseconds': 'माइक्रोसेकंड',
-        'nanoseconds': 'नैनोसेकंड',
-        'time remaining until': 'शेष समय ',
-        'time elapsed since': 'समय बीत गया ',
         'january': 'जनवरी',
         'february': 'फ़रवरी',
         'march': 'मार्च',
@@ -282,28 +69,6 @@ _DICTIONARY = {
         'saturday': 'शनिवार',
     },
     'sp': {
-        'and': 'y',
-        'to': 'para',
-        'year': 'año',
-        'month': 'mes',
-        'day': 'día',
-        'hour': 'hora',
-        'minute': 'minuto',
-        'second': 'segundo',
-        'millisecond': 'milisegundo',
-        'microsecond': 'microsegundo',
-        'nanosecond': 'nanosegundo',
-        'years': 'años',
-        'months': 'meses',
-        'days': 'dias',
-        'hours': 'horas',
-        'minutes': 'minutos',
-        'seconds': 'segundos',
-        'milliseconds': 'milisegundos',
-        'microseconds': 'microsegundos',
-        'nanoseconds': 'nanosegundos',
-        'time remaining until': 'Tiempo restante hasta ',
-        'time elapsed since': 'Tiempo transcurrido desde ',
         'january': 'enero',
         'february': 'febrero',
         'march': 'marcha',
@@ -325,30 +90,8 @@ _DICTIONARY = {
         'saturday': 'sábado',
     },
     'be': {
-        'and': 'এবং',
-        'to': 'প্রতি',
-        'year': 'বছর',
-        'month': 'মাস',
-        'day': 'দিন',
-        'hour': 'ঘন্টা',
-        'minute': 'মিনিট',
-        'second': 'দ্বিতীয়',
-        'millisecond': 'মিলিসেকেন্ড',
-        'microsecond': 'মাইক্রোসেকেন্ড',
-        'nanosecond': 'ন্যানোসেকেন্ড',
-        'years': 'বছর',
-        'months': 'মাস',
-        'days': 'দিন',
-        'hours': 'ঘন্টার',
-        'minutes': 'মিনিট',
-        'seconds': 'সেকেন্ড',
-        'milliseconds': 'মিলিসেকেন্ড',
-        'microseconds': 'মাইক্রোসেকেন্ড',
-        'nanoseconds': 'ন্যানোসেকেন্ড',
-        'time remaining until': 'পর্যন্ত সময় বাকি ',
-        'time elapsed since': 'সেই থেকে সময় কেটে গেছে ',
         'january': 'জানুয়ারী',
-        'february': 'ফেব্রুয়ারী',
+        'february': 'ফেব্রুয়ারি',
         'march': 'মার্চ',
         'april': 'এপ্রিল',
         'may': 'মে',
@@ -368,28 +111,6 @@ _DICTIONARY = {
         'saturday': 'শনিবার',
     },
     'fr': {
-        'and': 'et',
-        'to': 'à',
-        'year': 'an',
-        'month': 'mois',
-        'day': 'jour',
-        'hour': 'heure',
-        'minute': 'minute',
-        'second': 'seconde',
-        'millisecond': 'milliseconde',
-        'microsecond': 'microseconde',
-        'nanosecond': 'nanoseconde',
-        'years': 'ans',
-        'months': 'mois',
-        'days': 'jours',
-        'hours': 'heures',
-        'minutes': 'minutes',
-        'seconds': 'secondes',
-        'milliseconds': 'millisecondes',
-        'microseconds': 'microsecondes',
-        'nanoseconds': 'nanosecondes',
-        'time remaining until': "Temps restant jusqu'à ",
-        'time elapsed since': 'Temps écoulé depuis ',
         'january': 'janvier',
         'february': 'février',
         'march': 'mars',
@@ -411,28 +132,6 @@ _DICTIONARY = {
         'saturday': 'samedi',
     },
     'ru': {
-        'and': 'и',
-        'to': 'к',
-        'year': 'год',
-        'month': 'месяц',
-        'day': 'день',
-        'hour': 'час',
-        'minute': 'минута',
-        'second': 'второй',
-        'millisecond': 'миллисекунда',
-        'microsecond': 'микросекунда',
-        'nanosecond': 'наносекунда',
-        'years': 'годы',
-        'months': 'месяцы',
-        'days': 'дни',
-        'hours': 'часы',
-        'minutes': 'минуты',
-        'seconds': 'секунды',
-        'milliseconds': 'миллисекунды',
-        'microseconds': 'микросекунды',
-        'nanoseconds': 'наносекунды',
-        'time remaining until': 'Оставшееся время до ',
-        'time elapsed since': 'Прошло время с ',
         'january': 'январь',
         'february': 'февраль',
         'march': 'Маршировать',
@@ -454,28 +153,6 @@ _DICTIONARY = {
         'saturday': 'Суббота',
     },
     'po': {
-        'and': 'e',
-        'to': 'para',
-        'year': 'ano',
-        'month': 'mês',
-        'day': 'dia',
-        'hour': 'hora',
-        'minute': 'minuto',
-        'second': 'segundo',
-        'millisecond': 'milissegundo',
-        'microsecond': 'microssegundo',
-        'nanosecond': 'nanossegundo',
-        'years': 'anos',
-        'months': 'meses',
-        'days': 'dias',
-        'hours': 'horas',
-        'minutes': 'minutos',
-        'seconds': 'segundos',
-        'milliseconds': 'milissegundos',
-        'microseconds': 'microssegundos',
-        'nanoseconds': 'nanossegundos',
-        'time remaining until': 'Tempo restante até ',
-        'time elapsed since': 'Tempo decorrido desde ',
         'january': 'Janeiro',
         'february': 'Fevereiro',
         'march': 'Marchar',
@@ -498,636 +175,631 @@ _DICTIONARY = {
     }
 }
 
+_LANGUAGE = "en"
 
-class Time:
-    """Documentation from Time:
 
-     • __init__ -> Can be called empty to initialize to 0
-     • by_date() -> static method allowing to convert a Date into Time
-     • by_datetime_date() -> static method allowing to convert a datetime.date into Time
-     • by_datetime_time() -> static method allowing to convert a datetime.time into Time
-     • by_datetime_datetime() -> static method allowing to convert a datetime.datetime into Time
-     • update() -> allows to update the attributes
-     • -self -> returns the opposite
-     • self - x -> remove x nanosecond from the current object
-     • self == x -> checks equality with x
-     • self != x -> checks inequality with x
-     • str(self) -> sends a character string corresponding to the object
-     • print(self) -> print a character string corresponding to the object
-     • format(self, "...") -> sends a character string formatted according to the character string
-     • self[x] -> sends the value of the object according to x
-     • list(self) -> returns a list with the values of the object
-"""
+def set_language(language: str):
+    """Choose the program language.
 
-    @staticmethod
-    def by_date(date) -> __class__:
-        """Create a Time variable from a Date variable.
+    Langages
+    --------
+        + en : English
+        + ma : Mandarin
+        + hi : Hindi
+        + sp : Spanish
+        + be : Bengali
+        + fr : French
+        + ru : Russian
+        + po : Portuguese
 
-        :param date: A Date variable.
-        :return: A Time variable.
-        """
-        if isinstance(date, Date):
-            return Time(date[1], date[2], date[3], date[4], date[5], date[6], date[7],
-                        date[8], date[9], date[0], date[10])
-        else:
-            raise TypeError('A Date type variable is expected')
+    Parameters:
+        language (str) : The chosen language.
+    """
+    global _LANGUAGE
+    if language.lower() in _DICTIONARY.keys():
+        _LANGUAGE = language.lower()
+    else:
+        warnings.warn(Warning("Language not allowed."))
 
-    @staticmethod
-    def by_datetime_date(date: datetime.date) -> __class__:
-        """Create a Time variable from a datetime.date variable.
 
-        :param date: A datetime.date variable.
-        :return: A Time variable.
-        """
-        return Time(date.year, date.month, date.day)
+class _Calendar:
+    def __init__(self, year, pointeur=...):
+        if pointeur is ...:
+            pointeur = [1, 1]
 
-    @staticmethod
-    def by_datetime_time(date: datetime.time) -> __class__:
-        """Create a Time variable from a datetime.time variable.
+        self.year = year
+        self.pointeur = pointeur
+        self._normalize()
 
-        :param date: A datetime.time variable.
-        :return: A Time variable.
-        """
-        return Time(0, 0, 0, date.hour, date.minute, date.second,
-                    date.microsecond // 1000, date.microsecond % 1000)
+    def __str__(self):
+        return f"|{self.year} {self.pointeur[0]} {self.pointeur[1]}|"
 
-    @staticmethod
-    def by_datetime_datetime(date: datetime.datetime) -> __class__:
-        """Create a Time variable from a datetime.datetime variable.
+    def _normalize(self):
+        def normalize_month():
+            if 0 > self.pointeur[0] or self.pointeur[0] > 12:
+                self.year += self.pointeur[0] // 12
+                self.pointeur[0] %= 12
+            elif self.pointeur[0] == 0:
+                self.year -= 1
+                self.pointeur[0] = 12
 
-        :param date: A datetime.datetime variable.
-        :return: A Time variable.
-        """
-        return Time(date.year, date.month, date.day, date.hour, date.minute, date.second,
-                    date.microsecond // 1000, date.microsecond % 1000)
+        normalize_month()
+        while self.nb_day_at_this_month <= self.pointeur[1]:
+            self.pointeur[1] -= self.nb_day_at_this_month
+            self.pointeur[0] += 1
+            normalize_month()
+        while self.pointeur[1] <= 0:
+            self.pointeur[1] += self.calendar[self.pointeur[0] - 1 if self.pointeur[0] > 1 else 12]
+            self.pointeur[0] -= 1
+            normalize_month()
 
+    def next(self):
+        self.pointeur[1] += 1
+        self._normalize()
+
+    def previous(self):
+        self.pointeur[1] -= 1
+        self._normalize()
+
+    def nb_day_for(self, year=1970):
+        copy = _Calendar(self.year, self.pointeur)
+        days = 0
+        while copy.year + 1 != year:
+            days += 1
+            copy.previous()
+        return days
+
+    @property
+    def days(self):
+        return self.round_year, self.nb_day_for(self.round_year)
+
+    @property
+    def round_year(self):
+        return (self.year // 20) * 20
+
+    @property
+    def is_a_leap_year(self):
+        return (
+                (
+                        self.year % 4 == 0 and
+                        self.year % 100 != 0
+                ) or
+                self.year % 400 == 0
+        )
+
+    @property
+    def calendar(self):
+        return [
+            0,
+            31,
+            29 if self.is_a_leap_year else 28,
+            31,
+            30,
+            31,
+            30,
+            31,
+            31,
+            30,
+            31,
+            30,
+            31
+        ]
+
+    @property
+    def nb_day_at_this_month(self):
+        return self.calendar[self.pointeur[0]]
+
+    @property
+    def day(self):
+        return self.pointeur[1]
+
+    @property
+    def month(self):
+        return self.pointeur[0]
+
+
+class _TimeDate:
     def __init__(
             self,
-            year: int = 0,
-            month: int = 0,
-            day: int = 0,
-            hour: int = 0,
-            minute: int = 0,
-            second: int = 0,
-            millisecond: int = 0,
-            microsecond: int = 0,
-            nanosecond: int = 0,
-            name: str = None,
-            language: str = None
+            year=0, month=0, day=0,
+            hour=0, minute=0, second=0,
+            milli=0, micro=0, nano=0,
+            pico=0, femto=0, atto=0,
+            zepto=0, yocto=0, *, its_a_date=True
     ):
-        """Time object initialization.
+        self._update(
+            year, month, day,
+            hour, minute, second,
+            milli, micro, nano, pico, femto, atto, zepto, yocto,
+            its_a_date
+        )
 
-        :param year: The number of year. Default is 0.
-        :param month: The number of month. Default is 0.
-        :param day: The number of day. Default is 0.
-        :param hour: The number of hour. Default is 0.
-        :param minute: The number of minute. Default is 0.
-        :param second: The number of second. Default is 0.
-        :param millisecond: The number of millisecond. Default is 0.
-        :param microsecond: The number of microsecond. Default is 0.
-        :param nanosecond: The number of nanosecond. Default is 0.
-        :param name: The name of the time. Default is None.
-        :param language: The language for use. Default is LANGUAGE.
+    def _update(
+            self,
+            year, month, day,
+            hour, minute, second,
+            milli, micro, nano,
+            pico, femto, atto,
+            zepto, yocto, its_a_date
+    ):
+        self.yocto = int(yocto % 1000)
+        zepto += yocto // 1000
+        self.zepto = int(zepto % 1000)
+        atto += zepto // 1000
+        self.atto = int(atto % 1000)
+        femto += atto // 1000
+        self.femto = int(femto % 1000)
+        pico += femto // 1000
+        self.pico = int(pico % 1000)
+        nano += pico // 1000
+        self.nano = int(nano % 1000)
+        micro += nano // 1000
+        self.micro = int(micro % 1000)
+        milli += micro // 1000
+        self.milli = int(milli % 1000)
+        second += milli // 1000
+        self.second = int(second % 60)
+        minute += second // 60
+        self.minute = int(minute % 60)
+        hour += minute // 60
+        self.hour = int(hour % 24)
+        day += hour // 24
+
+        c = _Calendar(year, [month + (0 if its_a_date else 1), day])
+
+        self.day = int(c.day) - (0 if its_a_date else 1)
+        self.month = int(c.month) - (0 if its_a_date else 1)
+        self.year = int(c.year)
+
+    @property
+    def recommended_format(self):
+        """Return a recommended format for time or date with format()
+
+        Returns:
+            (str): The recommended format.
         """
-
-        self._name = name
-        self._language = _LANGUAGE
-
-        try:
-            self.set_language(language)
-        except ValueError:
-            pass
-        except TypeError:
-            pass
-
-        self._year = year
-        self._month = month
-        self._day = day
-        self._hour = hour
-        self._minute = minute
-        self._second = second
-        self._millisecond = millisecond
-        self._microsecond = microsecond
-        self._nanosecond = nanosecond
-
-        self.update()
-
-    def update(self) -> None:
-        """Update the attributes.
-
-        :return: None
-        """
-        if self._nanosecond >= 1000:
-            self._microsecond += self._nanosecond // 1000
-            self._nanosecond = self._nanosecond % 1000
-        elif self._nanosecond <= -1000:
-            self._microsecond -= self._nanosecond // -1000
-            self._nanosecond = self._nanosecond % -1000
-
-        if self._microsecond >= 1000:
-            self._millisecond += self._microsecond // 1000
-            self._microsecond = self._microsecond % 1000
-        elif self._microsecond <= -1000:
-            self._millisecond -= self._microsecond // -1000
-            self._microsecond = self._microsecond % -1000
-
-        if self._millisecond >= 1000:
-            self._second += self._millisecond // 1000
-            self._millisecond = self._millisecond % 1000
-        elif self._millisecond <= -1000:
-            self._second -= self._millisecond // -1000
-            self._millisecond = self._millisecond % -1000
-
-        if self._second >= 60:
-            self._minute += self._second // 60
-            self._second = self._second % 60
-        elif self._second <= -60:
-            self._minute -= self._second // -60
-            self._second = self._second % -60
-
-        if self._minute >= 60:
-            self._hour += self._minute // 60
-            self._minute = self._minute % 60
-        elif self._minute <= -60:
-            self._hour -= self._minute // -60
-            self._minute = self._minute % -60
-
-        if self._hour >= 24:
-            self._day += self._hour // 24
-            self._hour = self._hour % 24
-        elif self._hour <= -24:
-            self._day -= self._hour // -24
-            self._hour = self._hour % -24
-
-        if self._day >= 30.436875:
-            self._month += int(self._day // 30.436875)
-            self._day = round(self._day % 30.436875)
-
-        elif self._day <= -30.436875:
-            self._month -= int(self._day // -30.436875)
-            self._day = round(self._day % -30.436875)
-
-        if self._month >= 12:
-            self._year += self._month // 12
-            self._month = self._month % 12
-        elif self._month <= -12:
-            self._year -= self._month // -12
-            self._month = self._month % -12
-
-    def __abs__(self) -> __class__:
-        """The absolute value."""
-        if self.get('nanosecond') < 0:
-            return -self
+        if self.year > 0:
+            frmt = "_Y_ _M_ _D_ - _hh_:_mm_:_ss_"
+        elif self.month > 0:
+            frmt = "_M_ _D_ - _hh_:_mm_:_ss_"
+        elif self.day > 0:
+            frmt = "(_D_) _hh_:_mm_:_ss_"
+        elif self.hour > 0:
+            frmt = "_h_:_mm_:_ss_"
+        elif self.minute > 0:
+            frmt = "_m_:_ss_"
         else:
-            return self
+            frmt = "_s_"
 
-    def __neg__(self) -> __class__:
-        """The opposite value."""
-        return Time() - self
+        if self.yocto > 0:
+            frmt += "._mls__mcs__nns__pcs__fms__ats__zps__yts_"
+        elif self.zepto > 0:
+            frmt += "._mls__mcs__nns__pcs__fms__ats__zps_"
+        elif self.atto > 0:
+            frmt += "._mls__mcs__nns__pcs__fms__ats_"
+        elif self.femto > 0:
+            frmt += "._mls__mcs__nns__pcs__fms_"
+        elif self.pico > 0:
+            frmt += "._mls__mcs__nns__pcs_"
+        elif self.nano > 0:
+            frmt += "._mls__mcs__nns_"
+        elif self.micro > 0:
+            frmt += "._mls__mcs_"
+        elif self.milli > 0:
+            frmt += "._mls_"
 
-    def _get_this_and_that(self, other) -> tuple[int, int]:
-        if isinstance(self, Time):
-            this = self.get('nanosecond')
-        elif isinstance(self, Date):
-            this = Time.by_date(self).get('nanosecond')
-        else:
-            raise ValueError
+        return frmt
 
-        if isinstance(other, Time):
-            that = other.get('nanosecond')
-        elif isinstance(other, Date):
-            that = Time.by_date(other).get('nanosecond')
-        elif isinstance(other, int):
-            that = other * 1000000000
-        else:
-            raise ValueError
+    @property
+    def _formats(self):
+        return {
+            "_YYYY_": LassaLib.position('right', str(self.year), 4, '0'),
+            "_YY_": LassaLib.position('right', str(self.year)[-2:], 2, '0'),
+            "_Y_": LassaLib.position('right', str(self.year), 1, '0'),
 
-        return this, that
+            "_MM_": LassaLib.position('right', str(self.month), 2, '0'),
+            "_M_": LassaLib.position('right', str(self.month), 1, '0'),
 
-    def __add__(self, other) -> __class__:
-        """Add other."""
-        this, that = self._get_this_and_that(other)
-        res = this + that
-        return Time(nanosecond=res)
+            "_DD_": LassaLib.position('right', str(self.day), 2, '0'),
+            "_D_": LassaLib.position('right', str(self.day), 1, '0'),
 
-    def __sub__(self, other):
-        this, that = self._get_this_and_that(other)
-        res = this - that
-        return Time(nanosecond=res)
+            "_hh_": LassaLib.position('right', str(self.hour), 2, '0'),
+            "_h_": LassaLib.position('right', str(self.hour), 1, '0'),
 
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, Time) or isinstance(o, Date):
-            if isinstance(o, Date):
-                o = Time.by_date(o)
-            return self.get('nanosecond') == o.get('nanosecond')
-        else:
-            return False
+            "_mm_": LassaLib.position('right', str(self.minute), 2, '0'),
+            "_m_": LassaLib.position('right', str(self.minute), 1, '0'),
 
-    def __ne__(self, o: object) -> bool:
-        return not self.__eq__(o)
+            "_ss_": LassaLib.position('right', str(self.second), 2, '0'),
+            "_s_": LassaLib.position('right', str(self.second), 1, '0'),
 
-    def __str__(self) -> str:
-        def printDigit(x, d: int) -> str:
-            t = str(x)
-            while len(t) < d:
-                t = '0' + t
-            return t
+            "_mls_": LassaLib.position('right', str(self.milli), 3, '0'),
+            "_mcs_": LassaLib.position('right', str(self.micro), 3, '0'),
+            "_nns_": LassaLib.position('right', str(self.nano), 3, '0'),
+            "_pcs_": LassaLib.position('right', str(self.pico), 3, '0'),
+            "_fms_": LassaLib.position('right', str(self.femto), 3, '0'),
+            "_ats_": LassaLib.position('right', str(self.atto), 3, '0'),
+            "_zps_": LassaLib.position('right', str(self.zepto), 3, '0'),
+            "_yts_": LassaLib.position('right', str(self.yocto), 3, '0'),
 
-        time = str(self._second)
-
-        numberMLS, numberMCS, numberNNS = abs(self._millisecond), abs(self._microsecond), abs(self._nanosecond)
-
-        if self._millisecond != 0:
-            time += '.' + printDigit(numberMLS, 3)
-
-        if self._microsecond != 0:
-            if '.' in time:
-                time += printDigit(numberMCS, 3)
-            else:
-                time += '.000' + printDigit(numberMCS, 3)
-
-        if self._nanosecond != 0:
-            time += printDigit(numberNNS, 3)
-
-        try:
-            time += f" {_DICTIONARY[self._language]['seconds'] if float(str(self._second) + '.' + printDigit(numberMLS, 3) + printDigit(numberMCS, 3) + printDigit(numberNNS, 3)) > 1 else _DICTIONARY[self._language]['second']}."
-        except:
-            pass
-        if self._year != 0 or self._month != 0 or self._day != 0 or self._hour != 0 or self._minute != 0:
-            time = f"{self._minute} {_DICTIONARY[self._language]['minutes'] if self._minute > 1 else _DICTIONARY[self._language]['minute']} {_DICTIONARY[self._language]['and']} {time}"
-            if self._year != 0 or self._month != 0 or self._day != 0 or self._hour != 0:
-                time = f"{self._hour} {_DICTIONARY[self._language]['hours'] if self._hour > 1 else _DICTIONARY[self._language]['hour']}, {time}"
-                if self._year != 0 or self._month != 0 or self._day != 0:
-                    time = f"{self._day} {_DICTIONARY[self._language]['days'] if self._day > 1 else _DICTIONARY[self._language]['day']}, {time}"
-                    if self._year != 0 or self._month != 0:
-                        time = f"{self._month} {_DICTIONARY[self._language]['months'] if self._month > 1 else _DICTIONARY[self._language]['month']}, {time}"
-                        if self._year != 0:
-                            time = f"{self._year} {_DICTIONARY[self._language]['years'] if self._year > 1 else _DICTIONARY[self._language]['year']}, {time}"
-        return (self._name + " : " if self._name else '') + time
-
-    def __repr__(self) -> str:
-        return f"Time(year={self._year}, month={self._month}, day={self._day}, hour={self._hour}, minute={self._minute}, second={self._second}, millisecond={self._millisecond}, microsecond={self._microsecond}, nanosecond={self._nanosecond}, name={self._name})"
-
-    def __format__(self, format_spec: str) -> str:
-        """
-        for an example of Time(year=1985, month=6, day=21, hour=11, minute=1, second=59, millisecond=13, microsecond=541, name='Time')
-        format:
-            _name_  -> Time     Returns the name of the variable
-
-            _Y_     -> 1985
-            _M_     -> 6
-            _D_     -> 21
-
-            _h_     -> 11
-            _m_     -> 1
-            _s_     -> 59
-            _mls_   -> 13
-            _mcs_   -> 541
-            _nns_   -> 800
-        """
-        keys = {
-            "name": self._name,
-            "Y": str(self._year),
-            "M": str(self._month),
-            "D": str(self._day),
-            "h": str(self._hour),
-            "m": str(self._minute),
-            "s": str(self._second),
-            "mls": str(self._millisecond),
-            "mcs": str(self._microsecond),
-            "nns": str(self._nanosecond)
+            "_en-time_": (  # 8:50 p.m. and 35 seconds.
+                f"{self.hour % 12}:{self.minute}"
+                f"{'' if self.second == 0 else f''' {self.second} second{'s' if self.second > 1 else ''}'''}"
+                f"{' a.m.' if self.hour < 12 else ' p.m.'}"
+            ),
+            "_ma-time_": (  # 晚上 8 点 50 分 35 秒
+                f"{'凌晨 ' if self.hour < 12 else '晚上 '}"
+                f"{self.hour % 12} 点 {self.minute} 分"
+                f"{'' if self.second == 0 else f' {self.second} 秒'}"
+            ),
+            "_hi-time_": (  # 8:50 अपराह्न और 35 सेकंड
+                f"{self.hour % 12}:{self.minute}"
+                f"{' पूर्वाह्न' if self.hour < 12 else ' अपराह्न'}"
+                f"{'' if self.second == 0 else f' और {self.second} सेकंड'}"
+            ),
+            "_sp-time_": (  # 20:50 y 35 segundos
+                f"{self.hour}:{self.minute}"
+                f"{'' if self.second == 0 else f''' y {self.second} segundo{'s' if self.second > 1 else ''}'''}"
+            ),
+            "_be-time_": (  # রাত 8:50 এবং 35 সেকেন্ড।
+                f"{'' if self.hour < 12 else 'রাত '}"
+                f"{self.hour % 12}:{self.minute}"
+                f"{'' if self.second == 0 else f' এবং {self.second} সেকেন্ড'}"
+            ),
+            "_fr-time_": (  # 20 h 50 et 35 secondes
+                f"{self.hour} h {self.minute}"
+                f"{'' if self.second == 0 else f''' et {self.second} seconde{'s' if self.second > 1 else ''}'''}"
+            ),
+            "_ru-time_": (  # 20:50 и 35 секунд
+                f"{self.hour}:{self.minute}"
+                f"{'' if self.second == 0 else f''' и {self.second} секунд{'' if self.second > 1 else 'а'}'''}"
+            ),
+            "_po-time_": (  # 20h50 e 35 segundos.
+                f"{self.hour}h{self.minute}"
+                f"{'' if self.second == 0 else f''' e {self.second} segundo{'s' if self.second > 1 else ''}'''}"
+            ),
         }
-        time = ""
-        key = ""
-        lock = False
-        for l in format_spec:
-            if l == "_":
-                if lock:
-                    if key in keys:
-                        time += keys[key]
-                    else:
-                        time += "_" + key + "_"
-                else:
-                    key = ""
-                lock = not lock
-            elif lock:
-                key += l
-            else:
-                time += l
-        return time
 
-    def __getitem__(self, item) -> typing.Any:
-        if item > 10 or item < -11:
-            raise IndexError("time index out of range")
-        else:
-            return [
-                self._name,
-                self._year,
-                self._month,
-                self._day,
-                self._hour,
-                self._minute,
-                self._second,
-                self._millisecond,
-                self._microsecond,
-                self._nanosecond,
-                self._language
-            ][item]
+    def __format__(self, format_spec: str):
+        for key in self._formats:
+            format_spec = format_spec.replace(key, self._formats[key])
+        return format_spec
 
-    def __dir__(self) -> typing.Iterable[str]:
-        return [self._name, str(self._year), str(self._month), str(self._day), str(self._hour), str(self._minute),
-                str(self._second), str(self._millisecond), str(self._microsecond), str(self._nanosecond)]
+    def __str__(self):
+        return format(self, self.recommended_format)
+
+    def __repr__(self):
+        return format(self, "_YYYY_ _MM_ _DD_ - _hh_:_mm_:_ss_._mls__mcs__nns__pcs__fms__ats__zps__yts_")
+
+    def __int__(self):
+        return (
+                self.second +
+                self.minute * 60 +
+                self.hour * 3600 +
+                _Calendar(self.year, [self.month + 1, self.day + 1]).nb_day_for(0) * 86400
+        )
+
+    def __float__(self):
+        return int(self) + float(format(self, "0._mls__mcs__nns__pcs__fms__ats__zps__yts_"))
 
     def __iter__(self):
-        return iter([
-            ["name", self._name],
-            ["year", self._year],
-            ["month", self._month],
-            ["day", self._day],
-            ["hour", self._hour],
-            ["minute", self._minute],
-            ["second", self._second],
-            ["millisecond", self._millisecond],
-            ["microsecond", self._microsecond],
-            ["nanosecond", self._nanosecond]
-        ])
+        return iter(
+            [
+                self.year, self.month, self.day,
+                self.hour, self.minute, self.second,
+                self.milli, self.micro, self.nano,
+                self.pico, self.femto, self.atto,
+                self.zepto, self.yocto]
+        )
 
-    def _get_years(self) -> int:
-        return self._year
+    @property
+    def copy_time(self):
+        """Create a copy of actual value in Time class.
 
-    def _get_months(self) -> int:
-        return self._get_years() * 12 + self._month
+        Returns:
+            (Time): Time value.
+        """
+        reindex = 0 if isinstance(self, Time) else 1
+        return Time(
+            self.year, self.month - reindex, self.day - reindex,
+            self.hour, self.minute, self.second,
+            self.milli, self.micro, self.nano, self.pico, self.femto, self.atto, self.zepto, self.yocto
+        )
 
-    def _get_days(self) -> int:
-        return round(self._get_months() * 30.436875 + self._day)
+    @property
+    def copy_date(self):
+        """Create a copy of actual value in Date class.
 
-    def _get_hours(self) -> int:
-        return self._get_days() * 24 + self._hour
-
-    def _get_minutes(self) -> int:
-        return self._get_hours() * 60 + self._minute
-
-    def _get_seconds(self) -> int:
-        return self._get_minutes() * 60 + self._second
-
-    def _get_milliseconds(self) -> int:
-        return self._get_seconds() * 1000 + self._millisecond
-
-    def _get_microseconds(self) -> int:
-        return self._get_milliseconds() * 1000 + self._microsecond
-
-    def _get_nanoseconds(self) -> int:
-        return self._get_microseconds() * 1000 + self._nanosecond
-
-    def get(self, time) -> int:
-        return {
-            "year": self._get_years,
-            "month": self._get_months,
-            "day": self._get_days,
-            "hour": self._get_hours,
-            "minute": self._get_minutes,
-            "second": self._get_seconds,
-            "millisecond": self._get_milliseconds,
-            "microsecond": self._get_microseconds,
-            "nanosecond": self._get_nanoseconds
-        }[time]()
-
-    def get_value(self, time) -> int:
-        return {
-            "year": self._year,
-            "month": self._month,
-            "day": self._day,
-            "hour": self._hour,
-            "minute": self._minute,
-            "second": self._second,
-            "millisecond": self._millisecond,
-            "microsecond": self._microsecond,
-            "nanosecond": self._nanosecond
-        }[time]
-
-    def rename(self, name: str):
-        self._name = name
-
-    def set_language(self, language: str):
-        code = language[0:2]
-        if code in _DICTIONARY:
-            self._language = code
-        else:
-            raise ValueError(f'{code} is not in supported languages')
-
-
-class Date(Time):
-    @staticmethod
-    def __doc__():
-        return """\
-
-        Documentation of Date:
-
-     • __init__ -> Can be called empty to initialize to 0
-     • by_time() -> static method allowing to convert a Time into a Date
-     • by_datetime_datetime() -> static method allowing to convert a datetime.datetime into Date
-     • by_datetime_date() -> static method allowing to convert a datetime.date into Date
-     • by_datetime_time() -> static method allowing to convert a datetime.time into Date
-     • now() -> static method that returns the current date
-     • update() -> allows to update the attributes
-     • countdown() -> Returns a Time value of the time remaining until this date
-     • chrono() -> Returns a Time value of the time elapsed since this date
-     • get_name_month() -> Give the name of the month
-     • get_name_day() -> Give the name of the day of the week
-     • -self -> returns the opposite
-     • self - x -> remove x from the current object
-     • self == x -> checks for equality with x
-     • self != x -> checks the inequality with x
-     • str(self) -> sends a character string corresponding to the object
-     • print(self) -> sends a character string corresponding to the object
-     • format(self, "~") -> sends a character string formatted according to the character string
-     • self[x] -> sends the value of the object according to x
-     • list(self) -> returns a list with the values of the object
-"""
-
-    @staticmethod
-    def by_time(time):
-        return Date(time[1], time[2], time[3], time[4], time[5], time[6], time[7], time[8], time[9], time[0], time[10])
-
-    @staticmethod
-    def by_date(date):
-        return date
-
-    @staticmethod
-    def by_datetime_date(date: datetime.date):
-        return Date(date.year, date.month, date.day)
-
-    @staticmethod
-    def by_datetime_time(date: datetime.time):
-        return Date(0, 0, 0, date.hour, date.minute, date.second,
-                    date.microsecond // 1000, date.microsecond % 1000)
-
-    @staticmethod
-    def by_datetime_datetime(date: datetime.datetime):
-        return Date(date.year, date.month, date.day, date.hour, date.minute, date.second,
-                    date.microsecond // 1000, date.microsecond % 1000)
-
-    @staticmethod
-    def now():
+        Returns:
+            (Date): Date value.
+        """
+        reindex = 0 if isinstance(self, Date) else 1
         return Date(
-            # time_ns() -> UTC time since epoch + compensation to arrive at today
-            nanosecond=(time_ns() + Date(year=1970).get('nanosecond') + Time(
-                minute=DELTA[os.popen('tzutil /g').read()]).get('nanosecond')),
-            name="NOW"
+            self.year, self.month + reindex, self.day + reindex,
+            self.hour, self.minute, self.second,
+            self.milli, self.micro, self.nano, self.pico, self.femto, self.atto, self.zepto, self.yocto
+        )
+
+    def __sub__(self, other):
+        """Retirer une valeur au temps actuelle
+
+        Parameters:
+            other (Time): Temps à retirer
+
+        Returns:
+            (Time): Temps restant
+        """
+        return Time(
+            self.year - other.year, self.month - other.month, self.day - other.day + 1,
+            self.hour - other.hour, self.minute - other.minute, self.second - other.second,
+            self.milli - other.milli, self.micro - other.micro, self.nano - other.nano,
+            self.pico - other.pico, self.femto - other.femto, self.atto - other.atto,
+            self.zepto - other.zepto, self.yocto - other.yocto
+        )
+
+    def __add__(self, other):
+        """Ajouter une valeur au temps actuelle
+
+        Parameters:
+            other (Time): Temps à ajouter
+
+        Returns:
+            (Time): Temps restant
+        """
+        return Time(
+            self.year + other.year, self.month + other.month, self.day + other.day,
+            self.hour + other.hour, self.minute + other.minute, self.second + other.second,
+            self.milli + other.milli, self.micro + other.micro, self.nano + other.nano,
+            self.pico + other.pico, self.femto + other.femto, self.atto + other.atto,
+            self.zepto + other.zepto, self.yocto + other.yocto
+        )
+
+    def __eq__(self, other):
+        me = self.copy_time
+        other = other.copy_time
+
+        return (
+                me.year == other.year and
+                me.month == other.month and
+                me.day == other.day and
+                me.hour == other.hour and
+                me.minute == other.minute and
+                me.second == other.second and
+                me.milli == other.milli and
+                me.micro == other.micro and
+                me.nano == other.nano and
+                me.pico == other.pico and
+                me.femto == other.femto and
+                me.atto == other.atto and
+                me.zepto == other.zepto and
+                me.yocto == other.yocto
+        )
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def _transform_for_compare(self, other):
+        me = self.copy_time
+        other = other.copy_time
+
+        ry = min(
+            _Calendar(me.year, [me.month + 1, me.day + 1]).round_year,
+            _Calendar(other.year, [other.month + 1, other.day + 1]).round_year
+        )
+
+        me = (me.second + me.minute * 60 + me.hour * 3600 + _Calendar(me.year, [me.month + 1, me.day + 1]).nb_day_for(
+            ry) * 86400) + float(format(me, "0._mls__mcs__nns__pcs__fms__ats__zps__yts_"))
+        other = (other.second + other.minute * 60 + other.hour * 3600 + _Calendar(other.year, [other.month + 1,
+                                                                                               other.day + 1]).nb_day_for(
+            ry) * 86400) + float(format(other, "0._mls__mcs__nns__pcs__fms__ats__zps__yts_"))
+
+        return me, other
+
+    def __lt__(self, other):
+        me, other = self._transform_for_compare(other)
+        return me < other
+
+    def __le__(self, other):
+        me, other = self._transform_for_compare(other)
+        return me <= other
+
+    def __gt__(self, other):
+        me, other = self._transform_for_compare(other)
+        return me > other
+
+    def __ge__(self, other):
+        me, other = self._transform_for_compare(other)
+        return me >= other
+
+
+class Time(_TimeDate):
+    def __init__(
+            self,
+            year=0, month=0, day=0,
+            hour=0, minute=0, second=0,
+            milli=0, micro=0, nano=0,
+            pico=0, femto=0, atto=0,
+            zepto=0, yocto=0
+    ):
+        super().__init__(
+            year, month, day + 1, hour, minute, second, milli, micro, nano, pico, femto, atto, zepto, yocto,
+            its_a_date=False
+        )
+
+
+class Date(_TimeDate):
+    class Calendar:
+        def __init__(self, year, pointeur=...):
+            if pointeur is ...:
+                pointeur = [1, 1]
+
+            self.year = year
+            self.pointeur = pointeur
+            self._normalize()
+
+        def __str__(self):
+            return f"{self.pointeur[1]} {['Error', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Décembre'][self.pointeur[0]]} {self.year}"
+
+        def _normalize(self):
+            def normalize_month():
+                if self.pointeur[0] > 12:
+                    self.year += self.pointeur[0] // 12
+                    self.pointeur[0] %= 12
+
+            while self.nb_day_at_this_month < self.pointeur[1]:
+                self.pointeur[1] -= self.nb_day_at_this_month
+                self.pointeur[0] += 1
+                normalize_month()
+
+        def next(self):
+            self.pointeur[1] += 1
+            self._normalize()
+
+        @property
+        def is_a_leap_year(self):
+            return (
+                    (
+                            self.year % 4 == 0 and
+                            self.year % 100 != 0
+                    ) or
+                    self.year % 400 == 0
+            )
+
+        @property
+        def calendar(self):
+            return [
+                0,
+                31,
+                29 if self.is_a_leap_year else 28,
+                31,
+                30,
+                31,
+                30,
+                31,
+                31,
+                30,
+                31,
+                30,
+                31
+            ]
+
+        @property
+        def nb_day_at_this_month(self):
+            return self.calendar[self.pointeur[0]]
+
+    @classmethod
+    def NOW(cls):
+        """Return the current date.
+
+        Returns:
+            (Date): The date of the local computer.
+        """
+        return cls(timestamp=time.time_ns() / (10 ** 9))
+
+    @staticmethod
+    def from_datetime(datetime_):
+        """Create a Date from a datetime.datetime.
+
+        Parameters:
+            datetime_ (datetime.datetime): The datetime value
+
+        Returns:
+            (Date): The Date value
+        """
+        return Date(
+            datetime_.year, datetime_.month, datetime_.day,
+            datetime_.hour, datetime_.minute, datetime_.second,
+            micro=datetime_.microsecond
         )
 
     def __init__(
-            self,
-            year: int = None,
-            month: int = None,
-            day: int = None,
-            hour: int = 0,
-            minute: int = 0,
-            second: int = 0,
-            millisecond: int = 0,
-            microsecond: int = 0,
-            nanosecond: int = 0,
-            name: str = None,
-            language: str = None
+            self, year=400, month=1, day=1, hour=0, minute=0, second=0,
+            milli=0, micro=0, nano=0, pico=0, femto=0, atto=0, zepto=0, yocto=0,
+            *, timestamp=...
     ):
+        if timestamp is not ...:
+            data = datetime.datetime.fromtimestamp(int(timestamp // 1))
+            sub_second_data = LassaLib.space_number(int(timestamp % 1 * (10 ** 24))).split()
 
-        if year is None and month is None and day is None and hour + minute + second + millisecond + microsecond + nanosecond == 0:
-            year = 400
-            month = 1
-            day = 1
+            super().__init__(
+                data.year, data.month, data.day, data.hour, data.minute, data.second,
+                int(sub_second_data[0]) if len(sub_second_data) > 0 else 0,
+                int(sub_second_data[1]) if len(sub_second_data) > 1 else 0,
+                int(sub_second_data[2]) if len(sub_second_data) > 2 else 0,
+                int(sub_second_data[3]) if len(sub_second_data) > 3 else 0,
+                int(sub_second_data[4]) if len(sub_second_data) > 4 else 0,
+                int(sub_second_data[5]) if len(sub_second_data) > 5 else 0,
+                int(sub_second_data[6]) if len(sub_second_data) > 6 else 0,
+                int(sub_second_data[7]) if len(sub_second_data) > 7 else 0,
+            )
         else:
-            if year is None:
-                year = 0
-            if month is None:
-                month = 0
-            if day is None:
-                day = 0
+            super().__init__(
+                year, month, day, hour, minute, second,
+                milli, micro, nano, pico, femto, atto, zepto, yocto
+            )
 
-        super().__init__(year, month, day, hour, minute, second, millisecond, microsecond, nanosecond, name, language)
+    @property
+    def _formats(self):
+        frmt = super()._formats
+        frmt['_NM_'] = self.name_month
+        frmt['_ND_'] = self.name_day
+        return frmt
 
-        self._name = name
-        self._language = _LANGUAGE
+    @property
+    def recommended_format(self):
+        if _LANGUAGE == 'en':
+            f"_ND_, _NM_ _D_, _Y_ at _en-time_"
+        elif _LANGUAGE == 'ma':
+            return f"_Y_ 年 _M_ 月 _D_ _ND_ _ma-time_"
+        elif _LANGUAGE == 'hi':
+            return f"_ND_, _NM_ _D_, _Y_ को _hi-time_."
+        elif _LANGUAGE == 'sp':
+            return f"_ND_, _D_ de _NM_ de _Y_ a las _sp-time_"
+        elif _LANGUAGE == 'be':
+            return f"_ND_, _NM_ _D_, _Y_ _be-time_"
+        elif _LANGUAGE == 'fr':
+            return f"_ND_ _D_ _NM_ _Y_ à _fr-time_"
+        elif _LANGUAGE == 'ru':
+            return f"_ND_, _D_ _NM_ _Y_ г., _ru-time_"
+        elif _LANGUAGE == 'po':
+            return f"_ND_, _D_ de _NM_ de _Y_ às _po-time_"
 
-        try:
-            self.set_language(language)
-        except ValueError:
-            pass
-        except TypeError:
-            pass
+    @property
+    def name_month(self):
+        """Return the name of the month
 
-        self._year = year
-        self._month = month
-        self._day = day
-        self._hour = hour
-        self._minute = minute
-        self._second = second
-        self._millisecond = millisecond
-        self._microsecond = microsecond
-        self._nanosecond = nanosecond
+        Returns:
+            (str): The name.
+        """
+        return [
+            _DICTIONARY[_LANGUAGE]['january'],
+            _DICTIONARY[_LANGUAGE]['february'],
+            _DICTIONARY[_LANGUAGE]['march'],
+            _DICTIONARY[_LANGUAGE]['april'],
+            _DICTIONARY[_LANGUAGE]['may'],
+            _DICTIONARY[_LANGUAGE]['june'],
+            _DICTIONARY[_LANGUAGE]['july'],
+            _DICTIONARY[_LANGUAGE]['august'],
+            _DICTIONARY[_LANGUAGE]['september'],
+            _DICTIONARY[_LANGUAGE]['october'],
+            _DICTIONARY[_LANGUAGE]['november'],
+            _DICTIONARY[_LANGUAGE]['december']
+        ][self.month - 1]
 
-        self.update()
+    @property
+    def name_day(self):
+        """Return the name of the day
 
-        if self._month == 0:
-            self._month = 1
-        if self._day == 0:
-            self._day = 1
-
-    def update(self):
-        if self._nanosecond >= 1000:
-            self._microsecond += self._nanosecond // 1000
-            self._nanosecond = self._nanosecond % 1000
-        elif self._nanosecond <= -1000:
-            self._microsecond -= self._nanosecond // -1000
-            self._nanosecond = self._nanosecond % -1000
-
-        if self._microsecond >= 1000:
-            self._millisecond += self._microsecond // 1000
-            self._microsecond = self._microsecond % 1000
-        elif self._microsecond <= -1000:
-            self._millisecond -= self._microsecond // -1000
-            self._microsecond = self._microsecond % -1000
-
-        if self._millisecond >= 1000:
-            self._second += self._millisecond // 1000
-            self._millisecond = self._millisecond % 1000
-        elif self._millisecond <= -1000:
-            self._second -= self._millisecond // -1000
-            self._millisecond = self._millisecond % -1000
-
-        if self._second >= 60:
-            self._minute += self._second // 60
-            self._second = self._second % 60
-        elif self._second <= -60:
-            self._minute -= self._second // -60
-            self._second = self._second % -60
-
-        if self._minute >= 60:
-            self._hour += self._minute // 60
-            self._minute = self._minute % 60
-        elif self._minute <= -60:
-            self._hour -= self._minute // -60
-            self._minute = self._minute % -60
-
-        if self._hour >= 24:
-            self._day += self._hour // 24
-            self._hour = self._hour % 24
-        elif self._hour <= -24:
-            self._day -= self._hour // -24
-            self._hour = self._hour % -24
-
-        if self._day > 30.436875:
-            self._month += int(self._day // 30.436875)
-            self._day = int(self._day % 30.436875)
-
-        elif self._day < -30.436875:
-            self._month -= int(self._day // -30.436875)
-            self._day = int(self._day % -30.436875)
-
-        if self._month > 12:
-            self._year += self._month // 12
-            self._month = self._month % 12
-        elif self._month < -12:
-            self._year -= self._month // -12
-            self._month = self._month % -12
-
-    def countdown(self) -> Time:
-        r = self - Date.now()
-        r.rename(f"{_DICTIONARY[self._language]['time remaining until']}{self._name}")
-        r.set_language(self._language)
-        return r
-
-    def chrono(self):
-        c = Date.now() - self
-        c.rename(f"{_DICTIONARY[self._language]['time elapsed since']}{self._name}")
-        c.set_language(self._language)
-        return c
-
-    def get_name_month(self):
-        return \
-            [
-                _DICTIONARY[self._language]['january'],
-                _DICTIONARY[self._language]['february'],
-                _DICTIONARY[self._language]['march'],
-                _DICTIONARY[self._language]['april'],
-                _DICTIONARY[self._language]['may'],
-                _DICTIONARY[self._language]['june'],
-                _DICTIONARY[self._language]['july'],
-                _DICTIONARY[self._language]['august'],
-                _DICTIONARY[self._language]['september'],
-                _DICTIONARY[self._language]['october'],
-                _DICTIONARY[self._language]['november'],
-                _DICTIONARY[self._language]['december']
-            ][self._month - 1]
-
-    def get_name_day(self):
+        Returns:
+            (str): The name.
+        """
         valJ = {
-            0: _DICTIONARY[self._language]['sunday'],
-            1: _DICTIONARY[self._language]['monday'],
-            2: _DICTIONARY[self._language]['tuesday'],
-            3: _DICTIONARY[self._language]['wednesday'],
-            4: _DICTIONARY[self._language]['thursday'],
-            5: _DICTIONARY[self._language]['friday'],
-            6: _DICTIONARY[self._language]['saturday'],
+            0: _DICTIONARY[_LANGUAGE]['sunday'],
+            1: _DICTIONARY[_LANGUAGE]['monday'],
+            2: _DICTIONARY[_LANGUAGE]['tuesday'],
+            3: _DICTIONARY[_LANGUAGE]['wednesday'],
+            4: _DICTIONARY[_LANGUAGE]['thursday'],
+            5: _DICTIONARY[_LANGUAGE]['friday'],
+            6: _DICTIONARY[_LANGUAGE]['saturday'],
         }
         valM = {
             False: {
@@ -1159,148 +831,85 @@ class Date(Time):
                 12: 2
             }
         }
-        if self._year in range(400, 9999):
-            ab = int(str(self._year)[:2])
-            cd = int(str(self._year)[2:])
+        if self.year in range(400, 9999):
+            ab = int(str(self.year)[:2])
+            cd = int(str(self.year)[2:])
             k = int(cd / 4)
 
-            if int(f"{self._year:02d}{self._month:02d}{self._day:02d}") > 15821015:
+            if int(f"{self.year:02d}{self.month:02d}{self.day:02d}") > 15821015:
                 return valJ[
                     (k + int(ab / 4) + cd +
-                     valM[(self._year % 4 == 0 and self._year % 100 != 0) or self._year % 400 == 0][
-                         self._month] + self._day + 2 + 5 * ab) % 7]
+                     valM[(self.year % 4 == 0 and self.year % 100 != 0) or self.year % 400 == 0][
+                         self.month] + self.day + 2 + 5 * ab) % 7]
             else:
                 return valJ[
-                    (k + cd + valM[(self._year % 4 == 0 and self._year % 100 != 0) or self._year % 400 == 0][
-                        self._month] + self._day + 6 * ab) % 7]
+                    (k + cd + valM[(self.year % 4 == 0 and self.year % 100 != 0) or self.year % 400 == 0][
+                        self.month] + self.day + 6 * ab) % 7]
 
         else:
             raise ValueError("The year must be between 400 and 9999.")
 
-    def __format__(self, format_spec: str):
-        f"""
-        for an example of Date(year=1985, month=6, day=21, hour=11, minute=31, second=59, millisecond=13, microsecond=541, name='Date')
-        format:
-            _name_  -> Time     Returns the name of the variable
+    @property
+    def datetime(self):
+        """Create a datetime with current values.
 
-            _YYYY_  -> 1985     [force has 4 characters]
-            _YY_    -> 85       [force has 2 characters]
-            _Y_     -> 1985
-
-            _MM_    -> 06       [force has 2 characters]
-            _NM_    -> {_DICTIONARY[self._language]['June']}
-            _M_     -> 6
-
-            _DD_    -> 21       [force has 2 characters]
-            _ND_    -> {_DICTIONARY[self._language]['Friday']}
-            _D_     -> 21
-
-            _hh_    -> 11       [force has 2 characters]
-            _h_     -> 11
-            _mm_    -> 31       [force has 2 characters]
-            _m_     -> 31
-            _ss_    -> 59       [force has 2 characters]
-            _s_     -> 59
-            _mls_   -> 013      [force has 3 characters]
-            _mcs_   -> 541      [force has 3 characters]
-            _nns_   -> 800      [force has 3 characters]
+        Returns:
+            (datetime.datetime): The datetime
         """
+        return datetime.datetime(self.year, self.month, self.day, self.hour, self.minute, self.second,
+                                 (self.milli * 1000) + self.micro)
 
-        def intToString(integer: int, nb_digit: int) -> str:
-            ret = str(integer)
-            while len(ret) != nb_digit:
-                if len(ret) > nb_digit:
-                    ret = ret[-nb_digit:]
-                else:
-                    ret = "0" + ret
-            return ret
+    @property
+    def timestamp(self):
+        """Create a timestamps with current values.
 
-        keys = {
-            "name": self._name,
+        Returns:
+            (float): The timestamps.
+        """
+        return self.datetime.timestamp() + float(format(self, "0.000000_nns_"))
 
-            "YYYY": intToString(self._year, 4),
-            "YY": intToString(self._year, 2),
-            "Y": str(self._year),
+    @property
+    def is_a_leap_year(self):
+        """The current year is a leap year?
 
-            "MM": intToString(self._month, 2),
-            "M": str(self._month),
-            "NM": self.get_name_month(),
+        Returns:
+             (bool): The response.
+        """
+        return self.its_a_leap_year(self.year)
 
-            "DD": intToString(self._day, 2),
-            "D": str(self._day),
-            "ND": self.get_name_day(),
+    @classmethod
+    def its_a_leap_year(cls, year):
+        """This year is a leap year?
 
-            "hh": intToString(self._hour, 2),
-            "h": str(self._hour),
+        Returns:
+             (bool): The response.
+        """
+        return ((year % 4 == 0) and (year % 100 != 0)) or (year % 400 == 0)
 
-            "mm": intToString(self._minute, 2),
-            "m": str(self._minute),
+    def __sub__(self, other):
+        """"""
+        if isinstance(other, Date):
+            return self.copy_time - other.copy_time
+        else:
+            return (self.copy_time - other).copy_date
 
-            "ss": intToString(self._second, 2),
-            "s": str(self._second),
+    def __add__(self, other):
+        return (self.copy_time + other).copy_date
 
-            "mls": intToString(self._millisecond, 3),
-            "mcs": intToString(self._microsecond, 3),
-            "nns": intToString(self._nanosecond, 3)
-        }
-        date = ""
-        key = ""
-        lock = False
-        for l in format_spec:
-            if l == "_":
-                if lock:
-                    if key in keys:
-                        date += keys[key]
-                    else:
-                        date += "_" + key + "_"
-                else:
-                    key = ""
-                lock = not lock
-            elif lock:
-                key += l
-            else:
-                date += l
-        return date
+    @property
+    def countdown(self):
+        """Get the remaining time until this date.
 
-    def __str__(self):
-        return self.__format__("_ND_ _D_ _NM_ _Y_ " + _DICTIONARY[self._language]['to'] +
-                               " _h_h_mm_ " + _DICTIONARY[self._language]['and'] +
-                               " _s_,_mls__mcs__nns_ " + _DICTIONARY[self._language]['seconds'])
+        Returns:
+            (Time): The time.
+        """
+        return Date.NOW() - self if Date.NOW() >= self else None
 
-    def __repr__(self) -> str:
-        return f"Date(year={self._year}, month={self._month}, day={self._day}, hour={self._hour}, minute={self._minute}, second={self._second}, millisecond={self._millisecond}, microsecond={self._microsecond}, nanosecond={self._nanosecond}, name={self._name})"
+    @property
+    def chrono(self):
+        """Get the time passed since this date.
 
-
-def set_language(language: str):
-    code = language[0:2]
-    if code in _DICTIONARY:
-        global _LANGUAGE
-        _LANGUAGE = code
-    else:
-        raise ValueError(f'{code} is not in supported languages')
-
-
-if __name__ == '__main__':
-    if Date.now().get_value('month') > 9 or (Date.now().get_value('month') == 9 and Date.now().get_value('day') > 7):
-        birthday = Date(year=Date.now().get_value('year') + 1, month=9, day=7, hour=20, minute=50)
-    else:
-        birthday = Date(year=Date.now().get_value('year'), month=9, day=7, hour=20, minute=50)
-
-    test: Time
-
-    print(f"{str(Date.now())}\n"
-          f"{str(birthday.countdown())}\n"
-          f"{str(Date.now() + birthday.countdown())}\n\n")
-    test = Date.now() + birthday.countdown()
-    print(f"My birthday is in {str(birthday.countdown()).split(':')[1][1:]}\n"
-          f"the {str(Date.by_time(test))}\n")
-
-    birthday.set_language('fr')
-    test.set_language('fr')
-    print(f"Mon anniversaire est dans {str(birthday.countdown()).split(':')[1][1:]}\n"
-          f"le {str(Date.by_time(test))}\n")
-
-    birthday.set_language('sp')
-    test.set_language('sp')
-    print(f"Mi cumpleaños es en {str(birthday.countdown()).split(':')[1][1:]}\n"
-          f"la {str(Date.by_time(test))}\n")
+        Returns:
+            (Time): The time.
+        """
+        return self - Date.NOW() if self >= Date.NOW() else None

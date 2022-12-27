@@ -1,34 +1,44 @@
-# <p id="title">Timedate</p>
+# Timedate
 
-Advanced date and time management library.
+#### _Advanced date and time management library._
 
-Python library by LassaInora.
+Author:
+-------
+- [Axelle (LassaInora) VIANDIER](mailto:axelleviandier@lassainora.fr)
+
+License:
+--------
+- GNU General Public License v3.0
+
+Version:
+--------
+- `3.0.0`
 
 --------
 ## Summary
 
 - **[Links](#links)**
-- **[Contacts](#contact)**
 - **[Supported languages](#support_lang)**
 - **[Timedate functions and variables](#fonc_timedate)**
+  - ***[set_language](#fonc_timedate)***
+- **[For Time and Date](#timedate_methods)**
+  - ***[Methods](#timedate_methods)***
 - **[Class Time](#class_time)**
   - ***[Time initialization](#time__init__)***
-  - ***[Methods](#time_methods)***
+  - ***[Formats](#time_formats)***
 - **[Class Date](#class_date)**
   - ***[Date initialization](#date__init__)***
   - ***[Methods](#date_methods)***
+  - ***[Formats](#date_formats)***
 --------
 
-## <p id="links">Links</p>
+## Links
 
 - [Personal GitHub](https://github.com/LassaInora)
 - [GitHub project](https://github.com/LassaInora/Timedate)
-- [Website project](https://lassainora.fr/projet/librairies/Timedate)
+- [Website project](https://lassainora.fr/projets/librairies/Timedate)
+- [Pypi project](https://pypi.org/project/advanced-timedate/)
 
-## <p id="contact">Contacts</p>
-
-- [Personal email](mailto:axelleviandier@lassainora.fr)
-- [Professional email](mailto:lassainora@lassainora.fr)
 --------
 
 ## <p id="support_lang">Supported languages:</p>
@@ -41,195 +51,183 @@ Python library by LassaInora.
 - French (fr)
 - Russian (ru)
 - Portuguese (po)
---------
-## <p id="fonc_timedate">Timedate functions and variables:</p>
 
-- DELTA
-  - All time zones and their offset with UTC in seconds
+--------
+
+## <p id="fonc_timedate">Timedate functions:</p>
+
 - set_language()
   - Change the default language of the library.\
     \[en, ma, hi, sp, be, fr, ru, po] are accepted.
 --------
+## For Time and Date:
+
+- ### <p id="timedate_methods">Methods:</p>
+  - (Property) recommended_format
+    - Return a recommended format for time or date with format()
+  - (Property) copy_time
+    - Return a copy of current value in Time class
+  - (Property) copy_date
+    - Return a copy of current value in Date class
+  - < / > / <= / >= / == / != comparator
+    - Return the result of comparaison with each comparator.
+  - int(value)
+    - Return the numbers of second since years 0.
+  - float(value)
+    - Return the numbers of second since years 0 with a precision of 24 decimal places.
+  - str(value)
+    - Return the current value with the recommended format.
+  - repr(value)
+    - Return the current value with "YYYY MM DD - hh:mm:ss.mls mcs nns pcs fms ats zps yts" format
+  - iter(value) / list(value)
+    - Return each sub-value of current value.
+  - current value - other value
+    - Remove the other value on current value
+  - current value + other value
+    - Add the other value on current value
+
 ## <p id="class_time">Class Time:</p>
 
 - ### <p id="time__init__">Time initialization.</p>
 
-  - year: The number of year. Default is 0.
-  - month: The number of month. Default is 0.
-  - day: The number of day. Default is 0.
-  - hour: The number of hour. Default is 0.
-  - minute: The number of minute. Default is 0.
-  - second: The number of second. Default is 0.
-  - millisecond: The number of millisecond. Default is 0.
-  - microsecond: The number of microsecond. Default is 0.
-  - nanosecond: The number of nanosecond. Default is 0.
-  - name: The name of the time. Default is None.
-  - language: The language for use. Default is LANGUAGE.
+  - year: The number of years.
+  - month: The number of months.
+  - day: The number of days.
+  - hour: The number of hours.
+  - minute: The number of minutes.
+  - second: The number of seconds.
+  - milli: The number of milliseconds.
+  - micro: The number of microseconds.
+  - nano: The number of nanoseconds.
+  - pico: The number of picoseconds.
+  - femto: The number of femtosecondes.
+  - atto: The number of attosecondes.
+  - zepto: The number of zeptosecondes.
+  - yocto: The number of yoctosecondes.
+  </br></br>
+  For each value, the default value is 0.
 
-- ### <p id="time_methods">Methods:</p>
+- ### <p id="time_formats">Formats: </p>
+  - \_YYYY_: The years in 4 digits.
+  - \_YY_: The years in 2 digits.
+  - \_Y_: The years.
+  - \_MM_: The months in 2 digits.
+  - \_M_: The months
 
-  - by_date:
-    - Static method allowing to convert a Date into Time.
-  - by_datetime_date:
-    - Static method allowing to convert a datetime.date into Time.
-  - by_datetime_time:
-    - Static method allowing to convert a datetime.time into Time.
-  - by_datetime_datetime:
-    - Static method allowing to convert a datetime.datetime into Time.
-  - update:
-    - Allows to update the attributes.
-  - abs(time):
-    - Return the absolute value from the current object time.
-  - -time:
-    - Returns the opposite from the current object time.
-  - time + x:
-    - Add x nanosecond from the current object time.
-  - time + another_time:
-    - Add another_time from the current object time.
-  - time - x:
-    - Remove x nanosecond from the current object time.
-  - time - another_time:
-    - Remove another_time from the current object time.
-  - time == x:
-    - Checks equality with x.
-  - time != x:
-    - Checks inequality with x.
-  - str(time):
-    - Sends a character string corresponding to the object.
-  - print(time):
-    - Print a character string corresponding to the object.
-  - format(time, "..."):
-    - Sends a character string formatted according to the character string. 
-    ```
-    For an example of Time(year=1985, month=6, day=21, hour=11, minute=1, second=59, millisecond=13, microsecond=541, name='Example')
-      format:
-        - _name_  -> Example
-        - _Y_     -> 1985
-        - _M_     -> 6
-        - _D_     -> 21
-        - _h_     -> 11
-        - _m_     -> 1
-        - _s_     -> 59
-        - _mls_   -> 13
-        - _mcs_   -> 541
-        - _nns_   -> 800
-  - time\[x]:
-    - Sends the value of the object according to x.
-  - list(time):
-    - Returns a list with the values of the object.
-  - iter(time):
-    - Returns a list with the values of the object.
-  - get:
-    - Returns the value of the current object in the given unit.
-  - get_value:
-    - Returns the value of the given unit of the current object.
-  - rename:
-    - Rename the current object.
-  - set_language:
-    - Changes the current language of the object.
+  - \_DD_: The days in 2 digits.
+  - \_D_: The day
+
+  - \_hh_: The hours in 2 digits.
+  - \_h_: The hour
+
+  - \_mm_: The minutes in 2 digits.
+  - \_m_: The minute
+
+  - \_ss_: The secondes in 2 digits.
+  - \_s_: The seconde
+
+  - \_mls_: The milliseconds in 3 digits.
+  - \_mcs_: The microseconds in 3 digits.
+  - \_nns_: The nanoseconds in 3 digits.
+  - \_pcs_: The picosecondes in 3 digits.
+  - \_fms_: The femtosecondes in 3 digits.
+  - \_ats_: The attosecondes in 3 digits.
+  - \_zps_: The zeptosecondes in 3 digits.
+  - \_yts_: The yoctosecondes in 3 digits.
+
+  - \_en-time_: The time in english format
+  - \_ma-time_: The time in Mandarin format
+  - \_hi-time_: The time in Hindi format
+  - \_sp-time_: The time in Spanish format
+  - \_be-time_: The time in Bengali format
+  - \_fr-time_: The time in French format
+  - \_ru-time_: The time in Russian format.
+  - \_po-time_: The time in Portuguese format.
 
 --------
 ## <p id="class_date">Class Date:</p>
 
 - ### <p id="date__init__">Date initialization.</p>
 
-  - year: The number of year. Default is None.
-  - month: The number of month. Default is None.
-  - day: The number of day. Default is None.
-  - `/!\ If year, month and day are all None, year will be 400, month and day will be 1 otherwise the None values will be set to 0`
-  - hour: The number of hour. Default is 0.
-  - minute: The number of minute. Default is 0.
-  - second: The number of second. Default is 0.
-  - millisecond: The number of millisecond. Default is 0.
-  - microsecond: The number of microsecond. Default is 0.
-  - nanosecond: The number of nanosecond. Default is 0.
-  - name: The name of the date. Default is None.
-  - language: The language for use. Default is LANGUAGE.
+  - year: The number of year. Default is 400.
+  - month: The number of month. Default is 1.
+  - day: The number of day. Default is 1.
+  - hour: The number of hour.
+  - minute: The number of minute.
+  - second: The number of second.
+  - millisecond: The number of millisecond.
+  - microsecond: The number of microsecond.
+  - nanosecond: The number of nanosecond.
+  - pico: The number of picoseconds.
+  - femto: The number of femtosecondes.
+  - atto: The number of attosecondes.
+  - zepto: The number of zeptosecondes.
+  - yocto: The number of yoctosecondes.
+  </br></br>
+  - timestamp: You can ignore all previously value and use a timestamp for initialize the Date.
+  </br></br>
+  For each unspecified value, the default value is 0.\
+  Year cannot be less than 400.
 
 - ### <p id="date_methods">Methods:</p>
 
-  - by_time:
-    - Static method allowing to convert a Time into Date.
-  - by_datetime_date:
-    - Static method allowing to convert a datetime.date into Date.
-  - by_datetime_time:
-    - Static method allowing to convert a datetime.time into Date.
-  - by_datetime_datetime:
-    - Static method allowing to convert a datetime.datetime into Date.
-  - now:
-    - Static method get the current date.
-  - update:
-    - Allows to update the attributes.
-  - countdown:
-    - Returns a Time value of the time remaining until this date.
-  - chrono:
-    - Returns a Time value of the time elapsed since this date.
-  - get_name_month:
-    - Give the name of the month.
-  - get_name_day:
-    - Give the name of the day of the week.
-  - abs(time):
-    - Return the absolute value from the current object time.
-  - -time:
-    - Returns the opposite from the current object time.
-  - time + x:
-    - Add x nanosecond from the current object time.
-  - time + another_time:
-    - Add another_time from the current object time.
-  - time - x:
-    - Remove x nanosecond from the current object time.
-  - time - another_time:
-    - Remove another_time from the current object time.
-  - time == x:
-    - Checks equality with x.
-  - time != x:
-    - Checks inequality with x.
-  - str(time):
-    - Sends a character string corresponding to the object.
-  - print(time):
-    - Print a character string corresponding to the object.
-  - format(time, "..."):
-    - Sends a character string formatted according to the character string. 
-    ```
-    For an example of Date(year=1985, month=6, day=21, hour=11, minute=1, second=59, millisecond=13, microsecond=541, name='Example')
-      format:
-        - _name_  -> Example
+  - (Static Method) from_datetime(datetime_)
+    - Return a Date class create by datetime value
+  - (Class Method) NOW()
+    - Return the current Date
+  - (Class Method) its_a_leap_year(year)
+    - Return if year is a leap year.
+  - (Property) name_month
+    - Return the name of the month in the library langage (English in default).
+  - (Property) name_day
+    - Return the name of the day in the library langage (English in default).
+  - (Property) datetime
+    - Return a datetime with current value
+  - (Property) timestamp
+    - Return a timestamp with current value
+  - (Property) is_a_leap_year
+    - Return if current year is a leap year
+  - (Property) countdown
+    - Return the remaining time until the date.
+  - (Property) chrono
+    - Returns the time passed since the date.
+
+- ### <p id="date_formats">Formats: </p>
+  - \_YYYY_: The years in 4 digits.
+  - \_YY_: The years in 2 digits.
+  - \_Y_: The years.
   
-        - _YYYY_  -> 1985     [force has 4 characters]
-        - _YY_    -> 85       [force has 2 characters]
-        - _Y_     -> 1985
-  
-        - _MM_    -> 06       [force has 2 characters]
-        - _NM_    -> June
-        - _M_     -> 6
-  
-        - _DD_    -> 21       [force has 2 characters]
-        - _ND_    -> Friday
-        - _D_     -> 21
-  
-        - _hh_    -> 11       [force has 2 characters]
-        - _h_     -> 11
-  
-        - _mm_    -> 01       [force has 2 characters]
-        - _m_     -> 1
-  
-        - _ss_    -> 59       [force has 2 characters]
-        - _s_     -> 59
-  
-        - _mls_   -> 013      [force has 3 characters]
-        - _mcs_   -> 541      [force has 3 characters]
-        - _nns_   -> 800      [force has 3 characters]
-  - time\[x]:
-    - Sends the value of the object according to x.
-  - list(time):
-    - Returns a list with the values of the object.
-  - iter(time):
-    - Returns a list with the values of the object.
-  - get:
-    - Returns the value of the current object in the given unit.
-  - get_value:
-    - Returns the value of the given unit of the current object.
-  - rename:
-    - Rename the current object.
-  - set_language:
-    - Changes the current language of the object.
+  - \_MM_: The months in 2 digits.
+  - \_M_: The months
+  - \_NM_: The name of the month.
+
+  - \_DD_: The days in 2 digits.
+  - \_D_: The day
+  - \_ND_: The name of the day.
+
+  - \_hh_: The hours in 2 digits.
+  - \_h_: The hour
+
+  - \_mm_: The minutes in 2 digits.
+  - \_m_: The minute
+
+  - \_ss_: The secondes in 2 digits.
+  - \_s_: The seconde
+
+  - \_mls_: The milliseconds in 3 digits.
+  - \_mcs_: The microseconds in 3 digits.
+  - \_nns_: The nanoseconds in 3 digits.
+  - \_pcs_: The picosecondes in 3 digits.
+  - \_fms_: The femtosecondes in 3 digits.
+  - \_ats_: The attosecondes in 3 digits.
+  - \_zps_: The zeptosecondes in 3 digits.
+  - \_yts_: The yoctosecondes in 3 digits.
+
+  - \_en-time_: The time in english format
+  - \_ma-time_: The time in Mandarin format
+  - \_hi-time_: The time in Hindi format
+  - \_sp-time_: The time in Spanish format
+  - \_be-time_: The time in Bengali format
+  - \_fr-time_: The time in French format
+  - \_ru-time_: The time in Russian format.
+  - \_po-time_: The time in Portuguese format.
